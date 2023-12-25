@@ -10,12 +10,18 @@ class Player {
             x: 100,
             y: 100
         }
-        this.width = 100;
-        this.height = 100;
+        this.width = 30;
+        this.height = 30;
     }
 
     draw() {
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.fillStyle = 'red';
+        c.fillRect(
+            this.position.x, 
+            this.position.y, 
+            this.width, 
+            this.height
+        );
     }
 }
 
