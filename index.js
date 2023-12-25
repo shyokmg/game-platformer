@@ -91,6 +91,9 @@ const keys = {
     }
 }
 
+//  tracks screen scrolling from left to right
+let scrollOffset = 0;
+
 function animate() {
     // recall function
     requestAnimationFrame(animate)
@@ -113,14 +116,17 @@ function animate() {
         player.velocity.x = 0;
 
         if (keys.right.pressed) {
+            scrollOffset += 5;
             platforms.forEach(platform => {
                 platform.position.x -= 5;
             })
         } else if (keys.left.pressed) {
+            scrollOffset -= 5;
             platforms.forEach(platform => {
                 platform.position.x += 5;
             })
         }
+        // console.log(scrollOffset);
     }
 
     // Player collision with platforms
@@ -130,6 +136,11 @@ function animate() {
             // player.velocity.x = 0;
         }
     });
+    if (scrollOffset > 2000) {
+        console.log(' you win!');
+        player.velocity.y = 0;
+        player.velocity.x = 0;
+    }
 }
 
 // collision detection
@@ -142,9 +153,11 @@ function boxCollision(obj1, obj2) {
     }
 }
 
-
+// function call animate
 animate();
 
+
+// Event listener for pressing down on a key 
 addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
         // left key: A
@@ -165,6 +178,7 @@ addEventListener('keydown', ({ keyCode }) => {
     }
 });
 
+// Event listener for releasing off of a key 
 addEventListener('keyup', ({ keyCode }) => {
     switch (keyCode) {
         // left key: A
