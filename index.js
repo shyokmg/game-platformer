@@ -75,7 +75,11 @@ const platforms = [
     new Platform({
         x: 500,
         y: 200
-    })
+    }),
+    // new Platform({
+    //     x: 800,
+    //     y: 380
+    // })
 ]
 
 const keys = {
@@ -118,16 +122,26 @@ function animate() {
             })
         }
     }
+
+    // Player collision with platforms
     platforms.forEach(platform => {
-        // platfrom collision detection
-        if (player.position.y + player.height <= platform.position.y
-            && player.position.y + player.height + player.velocity.y >= platform.position.y
-            && player.position.x + player.width >= platform.position.x
-            && player.position.x <= platform.position.x + platform.width) {
+        if (boxCollision(player, platform)){
             player.velocity.y = 0;
+            // player.velocity.x = 0;
         }
     });
 }
+
+// collision detection
+function boxCollision(obj1, obj2) {
+    if (obj1.position.x + obj1.width + obj1.velocity.x >= obj2.position.x &&
+        obj1.position.x <= obj2.position.x + obj2.width &&
+        obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y &&
+        obj1.position.y <= obj2.position.y + obj2.height) {
+        return true
+    }
+}
+
 
 animate();
 
