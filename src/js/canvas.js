@@ -1,5 +1,5 @@
-import platform from '../img/platform.png';
-console.log(platform);
+// import platform from '../img/platform.png';
+// console.log(platform);
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
@@ -48,12 +48,12 @@ class Player {
 }
 
 class Platform {
-    constructor({ x, y }) {
+    constructor({ x, y, width }) {
         this.position = {
             x, // same as x : x
             y  // same as y : y
         };
-        this.width = 200;
+        this.width = width;
         this.height = 20;
     }
 
@@ -72,16 +72,20 @@ const player = new Player()
 const platforms = [
     new Platform({
         x: 200,
-        y: 100
+        y: 100,
+        width: 200
     }), 
     new Platform({
         x: 500,
-        y: 200
+        y: 200,
+        width: 200
     }),
-    // new Platform({
-    //     x: 800,
-    //     y: 380
-    // })
+    new Platform({
+        x: 0,
+        y: 400,
+        width: 2000
+        
+    })
 ]
 
 const keys = {
