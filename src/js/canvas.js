@@ -1,4 +1,5 @@
 import platform from '../img/platform.png';
+import platformSmallTall from '../img/platformSmallTall.png';
 import hills from '../img/hills.png';
 import background from '../img/background.png';
 
@@ -13,6 +14,7 @@ const gravity = 0.5;
 
 class Player {
   constructor() {
+    this.speed = 10
     this.position = {
       x: 100,
       y: 100
@@ -92,38 +94,10 @@ function createImage(imageSrc) {
 }
 
 let platformImage = createImage(platform);
-
+let platformSmallTallImage = createImage(platformSmallTall);
 let player = new Player()
-let platforms = [
-  new Platform({
-    x: -1,
-    y: 470,
-    image: platformImage
-  }),
-  new Platform({
-    x: platformImage.width - 2,
-    y: 470,
-    image: platformImage
-  }),
-  new Platform({
-    x: platformImage.width * 2 + 100,
-    y: 470,
-    image: platformImage
-  })
-]
-
-let genericObjects = [
-  new GenericObject({
-    x: -1,
-    y: -1,
-    image: createImage(background)
-  }),
-  new GenericObject({
-    x: -1,
-    y: -1,
-    image: createImage(hills)
-  })
-]
+let platforms = []
+let genericObjects = []
 
 const keys = {
   right: {
@@ -143,6 +117,11 @@ function init() {
   player = new Player()
   platforms = [
     new Platform({
+      x: platformImage.width * 4 + 300 -2 +  platformImage.width - platformSmallTallImage.width,
+      y: 270,
+      image: createImage(platformSmallTall)
+    }),
+    new Platform({
       x: -1,
       y: 470,
       image: platformImage
@@ -154,6 +133,21 @@ function init() {
     }),
     new Platform({
       x: platformImage.width * 2 + 100,
+      y: 470,
+      image: platformImage
+    }),
+    new Platform({
+      x: platformImage.width * 3 + 300,
+      y: 470,
+      image: platformImage
+    }),
+    new Platform({
+      x: platformImage.width * 4 + 300 -2,
+      y: 470,
+      image: platformImage
+    }),
+    new Platform({
+      x: platformImage.width * 5 + 700 -2,
       y: 470,
       image: platformImage
     })
@@ -197,30 +191,30 @@ function animate() {
 
   // If right or left keys are pressed move right or left in 5px
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
+    player.velocity.x = player.speed;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
 
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       platforms.forEach(platform => {
-        platform.position.x -= 5;
+        platform.position.x -= player.speed;
       });
-      // Paralax effect moving to the right
+      // Parallax effect moving to the right
       genericObjects.forEach(genericObject => {
-        genericObject.position.x -= 3;
+        genericObject.position.x -= player.speed * 0.66 ;
       });
 
     } else if (keys.left.pressed) {
       scrollOffset -= 5;
       platforms.forEach(platform => {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
-      // Paralax effect moving to the left
+      // Parallax effect moving to the left
       genericObjects.forEach(genericObject => {
-        genericObject.position.x += 3;
+        genericObject.position.x += player.speed * 0.66 ;
       })
     }
     // console.log(scrollOffset);
@@ -234,7 +228,7 @@ function animate() {
     }
   });
   // Win condition
-  if (scrollOffset > 2000) {
+  if (scrollOffset > platformImage.width * 5 + 300 -2) {
     console.log(' you win!');
   }
 
@@ -246,13 +240,21 @@ function animate() {
 
 // collision detection
 function boxCollision(obj1, obj2) {
-  if (obj1.position.x + obj1.width >= obj2.position.x &&
-    obj1.position.x <= obj2.position.x + obj2.width &&
-    obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y) {
-    return true
-  }
+  // if (obj1.position.x + obj1.width >= obj2.position.x &&
+  //   obj1.position.x <= obj2.position.x + obj2.width &&
+  //   obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y) {
+  //   return true
+  // }
+
+  if (obj1.position.y + obj1.height <= obj2.position.y &&
+    obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y &&
+    obj1.position.x + obj1.width >= obj2.position.x &&
+    obj1.position.x <= obj2.position.x + obj2.width) {
+      return true;
+    }
 }
 
+init();
 // function call animate
 animate();
 
@@ -273,7 +275,7 @@ addEventListener('keydown', ({ keyCode }) => {
       break;
     // up key: W
     case 87:
-      player.velocity.y -= 20
+      player.velocity.y -= 15
       break;
   }
 });
@@ -294,7 +296,6 @@ addEventListener('keyup', ({ keyCode }) => {
       break;
     // up key: W
     case 87:
-      player.velocity.y = 0
       break;
   }
 });
