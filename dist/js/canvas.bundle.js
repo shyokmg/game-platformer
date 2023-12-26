@@ -86,25 +86,41 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/img/platform.png":
+/*!******************************!*\
+  !*** ./src/img/platform.png ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "ffab39d3487de561be1a081fcfb3806d.png");
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
   \**************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _img_platform_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../img/platform.png */ "./src/img/platform.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-// import platform from '../img/platform.png';
-// console.log(platform);
+
+console.log(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+canvas.width = 1024;
+canvas.height = 576;
 var gravity = 0.5;
 var Player = /*#__PURE__*/function () {
   function Player() {
@@ -145,38 +161,37 @@ var Platform = /*#__PURE__*/function () {
   function Platform(_ref) {
     var x = _ref.x,
       y = _ref.y,
-      width = _ref.width;
+      image = _ref.image;
     _classCallCheck(this, Platform);
     this.position = {
       x: x,
       // same as x : x
       y: y // same as y : y
     };
-    this.width = width;
-    this.height = 20;
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
   }
   _createClass(Platform, [{
     key: "draw",
     value: function draw() {
-      c.fillStyle = 'blue';
-      c.fillRect(this.position.x, this.position.y, this.width, this.height);
+      c.drawImage(this.image, this.position.x, this.position.y);
     }
   }]);
   return Platform;
 }();
+var image = new Image();
+image.src = _img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"];
+console.log(image);
 var player = new Player();
 var platforms = [new Platform({
-  x: 200,
-  y: 100,
-  width: 200
+  x: -1,
+  y: 470,
+  image: image
 }), new Platform({
-  x: 500,
-  y: 200,
-  width: 200
-}), new Platform({
-  x: 0,
-  y: 400,
-  width: 2000
+  x: image.width - 2,
+  y: 470,
+  image: image
 })];
 var keys = {
   right: {
@@ -193,14 +208,15 @@ function animate() {
   // recall function
   requestAnimationFrame(animate);
   // removes draw from prev postion
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  c.fillStyle = 'white';
+  c.fillRect(0, 0, canvas.width, canvas.height);
   // update player position
-  player.update();
 
   // draw platform
   platforms.forEach(function (platform) {
     platform.draw();
   });
+  player.update();
 
   // If right or left keys are pressed move right or left in 5px
   if (keys.right.pressed && player.position.x < 400) {
