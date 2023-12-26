@@ -179,8 +179,6 @@ var Player = /*#__PURE__*/function () {
       this.position.x += this.velocity.x;
       if (this.position.y + this.height + this.velocity.y <= canvas.height) {
         this.velocity.y += gravity;
-      } else {
-        this.velocity.y = 0;
       }
     }
   }]);
@@ -247,6 +245,10 @@ var platforms = [new Platform({
   x: platformImage.width - 2,
   y: 470,
   image: platformImage
+}), new Platform({
+  x: platformImage.width * 2 + 100,
+  y: 470,
+  image: platformImage
 })];
 var genericObjects = [new GenericObject({
   x: -1,
@@ -268,6 +270,35 @@ var keys = {
 
 //  tracks screen scrolling from left to right
 var scrollOffset = 0;
+function init() {
+  platformImage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  player = new Player();
+  platforms = [new Platform({
+    x: -1,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width - 2,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage
+  })];
+  genericObjects = [new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+  }), new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  })];
+
+  //  tracks screen scrolling from left to right
+  scrollOffset = 0;
+}
 function animate() {
   // recall function
   requestAnimationFrame(animate);
@@ -321,16 +352,19 @@ function animate() {
       // player.velocity.x = 0;
     }
   });
+  // Win condition
   if (scrollOffset > 2000) {
     console.log(' you win!');
-    player.velocity.y = 0;
-    player.velocity.x = 0;
+  }
+  if (player.position.y > canvas.height) {
+    console.log('you lose');
+    init();
   }
 }
 
 // collision detection
 function boxCollision(obj1, obj2) {
-  if (obj1.position.x + obj1.width + obj1.velocity.x >= obj2.position.x && obj1.position.x <= obj2.position.x + obj2.width && obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y && obj1.position.y <= obj2.position.y + obj2.height) {
+  if (obj1.position.x + obj1.width >= obj2.position.x && obj1.position.x <= obj2.position.x + obj2.width && obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y) {
     return true;
   }
 }

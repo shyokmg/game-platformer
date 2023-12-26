@@ -12,78 +12,76 @@ const gravity = 0.5;
 
 
 class Player {
-    constructor() {
-        this.position = {
-            x: 100,
-            y: 100
-        }
-
-        this.velocity = {
-            x: 0,
-            y: 0
-        }
-        this.width = 30;
-        this.height = 30;
+  constructor() {
+    this.position = {
+      x: 100,
+      y: 100
     }
 
-    draw() {
-        c.fillStyle = 'red';
-        c.fillRect(
-            this.position.x,
-            this.position.y,
-            this.width,
-            this.height
-        );
+    this.velocity = {
+      x: 0,
+      y: 0
     }
+    this.width = 30;
+    this.height = 30;
+  }
 
-    update() {
-        this.draw();
-        this.position.y += this.velocity.y;
-        this.position.x += this.velocity.x;
+  draw() {
+    c.fillStyle = 'red';
+    c.fillRect(
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.height
+    );
+  }
 
-        if (this.position.y + this.height + this.velocity.y <= canvas.height) {
-            this.velocity.y += gravity;
-        } else {
-            this.velocity.y = 0;
-        }
+  update() {
+    this.draw();
+    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x;
+
+    if (this.position.y + this.height + this.velocity.y <= canvas.height) {
+      this.velocity.y += gravity;
     }
+  }
 }
 
 class Platform {
-    constructor({ x, y, image }) {
-        this.position = {
-            x, // same as x : x
-            y  // same as y : y
-        };
-        this.image = image;
-        this.width = image.width;
-        this.height = image.height;
-    }
+  constructor({ x, y, image }) {
+    this.position = {
+      x, // same as x : x
+      y  // same as y : y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
+  }
 
-    draw() {
-        c.drawImage(
-          this.image, 
-          this.position.x, 
-          this.position.y)
-    }
+  draw() {
+    c.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y)
+  }
 }
 
 class GenericObject {
   constructor({ x, y, image }) {
-      this.position = {
-          x, // same as x : x
-          y  // same as y : y
-      };
-      this.image = image;
-      this.width = image.width;
-      this.height = image.height;
+    this.position = {
+      x, // same as x : x
+      y  // same as y : y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
   }
 
   draw() {
-      c.drawImage(
-        this.image, 
-        this.position.x, 
-        this.position.y)
+    c.drawImage(
+      this.image,
+      this.position.x,
+      this.position.y)
   }
 }
 
@@ -93,23 +91,28 @@ function createImage(imageSrc) {
   return image;
 }
 
-const platformImage = createImage(platform);
+let platformImage = createImage(platform);
 
-const player = new Player()
-const platforms = [
-    new Platform({
-        x: -1,
-        y: 470,
-        image: platformImage
-    }), 
-    new Platform({
-        x: platformImage.width -2,
-        y: 470,
-        image: platformImage
-    })
+let player = new Player()
+let platforms = [
+  new Platform({
+    x: -1,
+    y: 470,
+    image: platformImage
+  }),
+  new Platform({
+    x: platformImage.width - 2,
+    y: 470,
+    image: platformImage
+  }),
+  new Platform({
+    x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage
+  })
 ]
 
-const genericObjects = [
+let genericObjects = [
   new GenericObject({
     x: -1,
     y: -1,
@@ -123,88 +126,131 @@ const genericObjects = [
 ]
 
 const keys = {
-    right: {
-        pressed: false
-    },
-    left: {
-        pressed: false
-    }
+  right: {
+    pressed: false
+  },
+  left: {
+    pressed: false
+  }
 }
 
 //  tracks screen scrolling from left to right
 let scrollOffset = 0;
 
+function init() {
+  platformImage = createImage(platform);
+
+  player = new Player()
+  platforms = [
+    new Platform({
+      x: -1,
+      y: 470,
+      image: platformImage
+    }),
+    new Platform({
+      x: platformImage.width - 2,
+      y: 470,
+      image: platformImage
+    }),
+    new Platform({
+      x: platformImage.width * 2 + 100,
+      y: 470,
+      image: platformImage
+    })
+  ]
+
+  genericObjects = [
+    new GenericObject({
+      x: -1,
+      y: -1,
+      image: createImage(background)
+    }),
+    new GenericObject({
+      x: -1,
+      y: -1,
+      image: createImage(hills)
+    })
+  ]
+
+  //  tracks screen scrolling from left to right
+  scrollOffset = 0;
+}
+
+
 function animate() {
-    // recall function
-    requestAnimationFrame(animate)
-    // removes draw from prev postion
-    c.fillStyle = 'white'
-    c.fillRect(0, 0, canvas.width, canvas.height);
+  // recall function
+  requestAnimationFrame(animate)
+  // removes draw from prev postion
+  c.fillStyle = 'white'
+  c.fillRect(0, 0, canvas.width, canvas.height);
 
-    genericObjects.forEach(genericObject => {
-      genericObject.draw()
-    })
-    
-    // draw platform
-    platforms.forEach(platform => {
-      platform.draw();
-    })
-    // update player position
-    player.update();
+  genericObjects.forEach(genericObject => {
+    genericObject.draw()
+  })
 
-    // If right or left keys are pressed move right or left in 5px
-    if (keys.right.pressed && player.position.x < 400) {
-        player.velocity.x = 5;
-    } else if (keys.left.pressed && player.position.x > 100) {
-        player.velocity.x = -5;
-    } else {
-        player.velocity.x = 0;
+  // draw platform
+  platforms.forEach(platform => {
+    platform.draw();
+  });
+  // update player position
+  player.update();
 
-        if (keys.right.pressed) {
-            scrollOffset += 5;
-            platforms.forEach(platform => {
-                platform.position.x -= 5;
-            });
-            // Paralax effect moving to the right
-            genericObjects.forEach(genericObject => {
-              genericObject.position.x -= 3;
-            });
+  // If right or left keys are pressed move right or left in 5px
+  if (keys.right.pressed && player.position.x < 400) {
+    player.velocity.x = 5;
+  } else if (keys.left.pressed && player.position.x > 100) {
+    player.velocity.x = -5;
+  } else {
+    player.velocity.x = 0;
 
-        } else if (keys.left.pressed) {
-            scrollOffset -= 5;
-            platforms.forEach(platform => {
-                platform.position.x += 5;
-            });
-            // Paralax effect moving to the left
-            genericObjects.forEach(genericObject => {
-              genericObject.position.x += 3;
-            })
-        }
-        // console.log(scrollOffset);
+    if (keys.right.pressed) {
+      scrollOffset += 5;
+      platforms.forEach(platform => {
+        platform.position.x -= 5;
+      });
+      // Paralax effect moving to the right
+      genericObjects.forEach(genericObject => {
+        genericObject.position.x -= 3;
+      });
+
+    } else if (keys.left.pressed) {
+      scrollOffset -= 5;
+      platforms.forEach(platform => {
+        platform.position.x += 5;
+      });
+      // Paralax effect moving to the left
+      genericObjects.forEach(genericObject => {
+        genericObject.position.x += 3;
+      })
     }
+    // console.log(scrollOffset);
+  }
 
-    // Player collision with platforms
-    platforms.forEach(platform => {
-        if (boxCollision(player, platform)){
-            player.velocity.y = 0;
-            // player.velocity.x = 0;
-        }
-    });
-    if (scrollOffset > 2000) {
-        console.log(' you win!');
-        player.velocity.y = 0;
-        player.velocity.x = 0;
+  // Player collision with platforms
+  platforms.forEach(platform => {
+    if (boxCollision(player, platform)) {
+      player.velocity.y = 0;
+      // player.velocity.x = 0;
     }
+  });
+  // Win condition
+  if (scrollOffset > 2000) {
+    console.log(' you win!');
+  }
+
+  if (player.position.y > canvas.height) {
+    console.log('you lose');
+    init();
+  }
 }
 
 // collision detection
 function boxCollision(obj1, obj2) {
-    if (obj1.position.x + obj1.width + obj1.velocity.x >= obj2.position.x &&
-        obj1.position.x <= obj2.position.x + obj2.width &&
-        obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y &&
-        obj1.position.y <= obj2.position.y + obj2.height) {
-        return true
-    }
+  if (obj1.position.x + obj1.width >= obj2.position.x &&
+    obj1.position.x <= obj2.position.x + obj2.width &&
+    obj1.position.y + obj1.height + obj1.velocity.y >= obj2.position.y) {
+    return true
+  }
 }
 
 // function call animate
@@ -213,42 +259,42 @@ animate();
 
 // Event listener for pressing down on a key 
 addEventListener('keydown', ({ keyCode }) => {
-    switch (keyCode) {
-        // left key: A
-        case 65:
-            keys.left.pressed = true;
-            break;
-        // down key: S
-        case 83:
-            break;
-        // right key: D
-        case 68:
-            keys.right.pressed = true;
-            break;
-        // up key: W
-        case 87:
-            player.velocity.y -= 20
-            break;
-    }
+  switch (keyCode) {
+    // left key: A
+    case 65:
+      keys.left.pressed = true;
+      break;
+    // down key: S
+    case 83:
+      break;
+    // right key: D
+    case 68:
+      keys.right.pressed = true;
+      break;
+    // up key: W
+    case 87:
+      player.velocity.y -= 20
+      break;
+  }
 });
 
 // Event listener for releasing off of a key 
 addEventListener('keyup', ({ keyCode }) => {
-    switch (keyCode) {
-        // left key: A
-        case 65:
-            keys.left.pressed = false;
-            break;
-        // down key: S
-        case 83:
-            break;
-        // right key: D
-        case 68:
-            keys.right.pressed = false;
-            break;
-        // up key: W
-        case 87:
-            player.velocity.y = 0
-            break;
-    }
+  switch (keyCode) {
+    // left key: A
+    case 65:
+      keys.left.pressed = false;
+      break;
+    // down key: S
+    case 83:
+      break;
+    // right key: D
+    case 68:
+      keys.right.pressed = false;
+      break;
+    // up key: W
+    case 87:
+      player.velocity.y = 0
+      break;
+  }
 });
