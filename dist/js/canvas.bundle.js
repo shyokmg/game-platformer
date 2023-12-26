@@ -86,6 +86,32 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/img/background.png":
+/*!********************************!*\
+  !*** ./src/img/background.png ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "072d51bcc9c09311d4c2a6708b05bddc.png");
+
+/***/ }),
+
+/***/ "./src/img/hills.png":
+/*!***************************!*\
+  !*** ./src/img/hills.png ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "cfffe4c371f5e11d372b398a87c51dd0.png");
+
+/***/ }),
+
 /***/ "./src/img/platform.png":
 /*!******************************!*\
   !*** ./src/img/platform.png ***!
@@ -109,6 +135,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _img_platform_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../img/platform.png */ "./src/img/platform.png");
+/* harmony import */ var _img_hills_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../img/hills.png */ "./src/img/hills.png");
+/* harmony import */ var _img_background_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../img/background.png */ "./src/img/background.png");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -116,7 +144,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
-console.log(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
 canvas.width = 1024;
@@ -180,18 +209,53 @@ var Platform = /*#__PURE__*/function () {
   }]);
   return Platform;
 }();
-var image = new Image();
-image.src = _img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"];
-console.log(image);
+var GenericObject = /*#__PURE__*/function () {
+  function GenericObject(_ref2) {
+    var x = _ref2.x,
+      y = _ref2.y,
+      image = _ref2.image;
+    _classCallCheck(this, GenericObject);
+    this.position = {
+      x: x,
+      // same as x : x
+      y: y // same as y : y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
+  }
+  _createClass(GenericObject, [{
+    key: "draw",
+    value: function draw() {
+      c.drawImage(this.image, this.position.x, this.position.y);
+    }
+  }]);
+  return GenericObject;
+}();
+function createImage(imageSrc) {
+  var image = new Image();
+  image.src = imageSrc;
+  return image;
+}
+var platformImage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var player = new Player();
 var platforms = [new Platform({
   x: -1,
   y: 470,
-  image: image
+  image: platformImage
 }), new Platform({
-  x: image.width - 2,
+  x: platformImage.width - 2,
   y: 470,
-  image: image
+  image: platformImage
+})];
+var genericObjects = [new GenericObject({
+  x: -1,
+  y: -1,
+  image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+}), new GenericObject({
+  x: -1,
+  y: -1,
+  image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
 })];
 var keys = {
   right: {
@@ -210,12 +274,15 @@ function animate() {
   // removes draw from prev postion
   c.fillStyle = 'white';
   c.fillRect(0, 0, canvas.width, canvas.height);
-  // update player position
+  genericObjects.forEach(function (genericObject) {
+    genericObject.draw();
+  });
 
   // draw platform
   platforms.forEach(function (platform) {
     platform.draw();
   });
+  // update player position
   player.update();
 
   // If right or left keys are pressed move right or left in 5px
@@ -230,10 +297,18 @@ function animate() {
       platforms.forEach(function (platform) {
         platform.position.x -= 5;
       });
+      // Paralax effect moving to the right
+      genericObjects.forEach(function (genericObject) {
+        genericObject.position.x -= 3;
+      });
     } else if (keys.left.pressed) {
       scrollOffset -= 5;
       platforms.forEach(function (platform) {
         platform.position.x += 5;
+      });
+      // Paralax effect moving to the left
+      genericObjects.forEach(function (genericObject) {
+        genericObject.position.x += 3;
       });
     }
     // console.log(scrollOffset);
@@ -264,8 +339,8 @@ function boxCollision(obj1, obj2) {
 animate();
 
 // Event listener for pressing down on a key 
-addEventListener('keydown', function (_ref2) {
-  var keyCode = _ref2.keyCode;
+addEventListener('keydown', function (_ref3) {
+  var keyCode = _ref3.keyCode;
   switch (keyCode) {
     // left key: A
     case 65:
@@ -286,8 +361,8 @@ addEventListener('keydown', function (_ref2) {
 });
 
 // Event listener for releasing off of a key 
-addEventListener('keyup', function (_ref3) {
-  var keyCode = _ref3.keyCode;
+addEventListener('keyup', function (_ref4) {
+  var keyCode = _ref4.keyCode;
   switch (keyCode) {
     // left key: A
     case 65:
